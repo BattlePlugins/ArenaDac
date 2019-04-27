@@ -1,4 +1,4 @@
-package kana.ArenaDac;
+package me.kana.arenadac;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +50,7 @@ public class ArenaDacArena extends Arena{
 	}
 	
 	//-----------------------------------------
-	//---- On récupère le nombre de joueur ----
+	//---- On rï¿½cupï¿½re le nombre de joueur ----
 	//-----------------------------------------
 	public int Nbr_Teams(){
 		team = getTeams();
@@ -59,7 +59,7 @@ public class ArenaDacArena extends Arena{
 	}
 	
 	//-------------------------------------------
-	//---- On récupère le joueurs de la team ----
+	//---- On rï¿½cupï¿½re le joueurs de la team ----
 	//-------------------------------------------
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Player Player_Team(int num_team){
@@ -69,7 +69,7 @@ public class ArenaDacArena extends Arena{
 	}
 	
 	//-------------------------------------------------
-	//---- On téléporte tous les joueurs au départ ----
+	//---- On tï¿½lï¿½porte tous les joueurs au dï¿½part ----
 	//-------------------------------------------------
 	public void TpAllPlayerSpawn(){
 		for(int i=0; i < nbr_teams; i++){
@@ -78,14 +78,14 @@ public class ArenaDacArena extends Arena{
 	}
 	
 	//------------------------------------------------
-	//---- On téléporte tous les joueurs au spawn ----
+	//---- On tï¿½lï¿½porte tous les joueurs au spawn ----
 	//------------------------------------------------
 	public void TpPlayerSpawn(Player player){
 		player.teleport(locationSpawnStart);		
 	}
 	
 	//---------------------------------------------
-	//---- On téléporte le joueur au plongeoir ----
+	//---- On tï¿½lï¿½porte le joueur au plongeoir ----
 	//---------------------------------------------
 	public void TpPlayerPlongeoir(Player player){
 		player.teleport(locationSpawnPlongeoir);
@@ -93,7 +93,7 @@ public class ArenaDacArena extends Arena{
 	}
 	
 	//-----------------------------------------------------
-	//---- On créé une liste avec les vies des joueurs ----
+	//---- On crï¿½ï¿½ une liste avec les vies des joueurs ----
 	//-----------------------------------------------------
 	public void setLivePlayer(){
 		nbr_vie_player = new HashMap<Player, Integer>();
@@ -104,7 +104,7 @@ public class ArenaDacArena extends Arena{
 	}
 	
 	//------------------------------------------------
-	//---- On regarde si le joueur réusi son saut ----
+	//---- On regarde si le joueur rï¿½usi son saut ----
 	//------------------------------------------------
 	@SuppressWarnings("deprecation")
 	@ArenaEventHandler(suppressCastWarnings=true)
@@ -118,18 +118,18 @@ public class ArenaDacArena extends Arena{
 	    if (m == Material.STATIONARY_WATER || m == Material.WATER || m == Material.LAVA){	    	
 	    	if(playerSaut == e.getPlayer()){
 	    			    		
-	    		// On récupère la couleur de la team
+	    		// On rï¿½cupï¿½re la couleur de la team
 		    	//----------------------------------
 		    	DyeColor c = TeamUtil.getDyeColor(numero_team);
 		    	byte d = c.getData();
 		    	
-		    	// On Vérifi si le joueur a fait une vie
+		    	// On Vï¿½rifi si le joueur a fait une vie
 		        //--------------------------------------
 		        if(verifVie == true){
 		        	verif_vie(l, e.getPlayer());
 		        }
 		    	
-		        // On défini le Material à mettre
+		        // On dï¿½fini le Material ï¿½ mettre
 		        //-------------------------------
 		        if(vieok == 0){
 		        	mm = Material.WOOL;
@@ -165,7 +165,7 @@ public class ArenaDacArena extends Arena{
 		        	TpPlayerPlongeoir(Player_Team(numero_team));
 		        }
 		        
-		        // On téléporte le joueur au spawn après son saut
+		        // On tï¿½lï¿½porte le joueur au spawn aprï¿½s son saut
 		        //-----------------------------------------------
 		        e.getPlayer().teleport(locationSpawnStart);
 	    	}
@@ -185,11 +185,11 @@ public class ArenaDacArena extends Arena{
 				//-----------------------------------
 				if(v == 0){
 					e.setDamage(20);
-					p.sendMessage("[ArenaDac] Vous avez loupé votre saut !");
+					p.sendMessage("[ArenaDac] Vous avez loupï¿½ votre saut !");
 				}
 				else{
 					e.setDamage(0);
-					p.sendMessage("[ArenaDac] Vous avez loupé votre saut !");
+					p.sendMessage("[ArenaDac] Vous avez loupï¿½ votre saut !");
 					p.sendMessage("[ArenaDac] Vous perdez une vie :(");
 					nbr_vie_player.replace(p, v);
 					p.sendMessage("[ArenaDac] Il vous en reste : " + v);
@@ -214,7 +214,7 @@ public class ArenaDacArena extends Arena{
 	}
 	
 	//---------------------------------------------
-	//---- On vérifi si le joueur gagne un vie ----
+	//---- On vï¿½rifi si le joueur gagne un vie ----
 	//---------------------------------------------
 	public void verif_vie(Location loc, Player player){
 		Material m1 = loc.getBlock().getRelative(1, -1, 0).getType();
@@ -225,7 +225,7 @@ public class ArenaDacArena extends Arena{
 		if(m1 == Material.WOOL && m2 == Material.WOOL && m3 == Material.WOOL && m4 == Material.WOOL){
 			int v = nbr_vie_player.get(player) + 1;
 			nbr_vie_player.replace(player, v);
-			player.sendMessage("[ArenaDac] Félicitation vous avez gagné une vie :)");
+			player.sendMessage("[ArenaDac] Fï¿½licitation vous avez gagnï¿½ une vie :)");
 			player.sendMessage("[ArenaDac] Il vous en reste : " + v);
 			vieok = 1;
 		}

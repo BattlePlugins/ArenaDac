@@ -1,11 +1,10 @@
-package kana.ArenaDac;
+package me.kana.arenadac;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.util.Log;
-import kana.ArenaDac.ArenaDacCommand;
 
 public class ArenaDac extends JavaPlugin{
 	

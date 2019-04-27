@@ -1,4 +1,4 @@
-package kana.ArenaDac;
+package me.kana.arenadac;
 
 import org.bukkit.entity.Player;
 
@@ -10,12 +10,12 @@ public class ArenaDacCommand extends CustomCommandExecutor{
 	@MCCommand(cmds={"vie"}, admin=false)
 	public boolean vie(Player p) {
 		if(ArenaDacArena.nbr_vie_player == null){
-			p.sendMessage("[ArenaDac] Vous ne participez à aucune partie !");
+			p.sendMessage("[ArenaDac] Vous ne participez ï¿½ aucune partie !");
 			return false;
 		}
 		else{
 			if(ArenaDacArena.nbr_vie_player.get(p) == null){
-				p.sendMessage("[ArenaDac] Vous ne participez à aucune partie !");
+				p.sendMessage("[ArenaDac] Vous ne participez ï¿½ aucune partie !");
 				return false;
 			}
 			else{

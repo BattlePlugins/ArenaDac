@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>me.kana</groupId>
+    <artifactId>ArenaDac</artifactId>
+    <packaging>jar</packaging>
+    <version>0.1.0</version>
+    <name>ArenaDac</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    <url>http://maven.apache.org</url>
+    <!-- Locations for jar repositories -->
+    <repositories>
+        <repository>
+            <id>rainbowcraft-repo</id>
+            <url>http://rainbowcraft.sytes.net/maven/repository/</url>
+        </repository>
+        <repository>
+            <id>spigot-public</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/public/</url>
+        </repository>
+        <repository>
+            <id>bukkit-public</id>
+            <url>https://repo.md-5.net/content/repositories/public/</url>
+        </repository>
+    </repositories>
+    <!-- Dependency jars -->
+    <dependencies>
+        <!-- plugins that have their own maven repos -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.8.0-R0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>mc.alk</groupId>
+            <artifactId>BattleArena</artifactId>
+            <version>3.9.11.4</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <!-- How we will compile the plugin -->
+    <build>
+        <finalName>${project.name}</finalName>
+        <defaultGoal>install</defaultGoal>
+        <!-- Where our source directory is -->
+        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+        <!-- Include all the resources we need -->
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+    <distributionManagement>
+        <repository>
+            <id>rainbowcraft-repo</id>
+            <url>scp://rainbowcraft.sytes.net/var/www/maven/repository</url>
+        </repository>
+    </distributionManagement>
+</project>
