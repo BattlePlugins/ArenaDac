@@ -8,40 +8,40 @@ import mc.alk.arena.util.Log;
 
 public class ArenaDac extends JavaPlugin{
 
-	private static ArenaDac plugin;
+    private static ArenaDac plugin;
 
-	public int lives;
-	public boolean useLives;
+    public int lives;
+    public boolean useLives;
 
-	@Override
-	public void onEnable(){
-		plugin = this;
+    @Override
+    public void onEnable(){
+        plugin = this;
 
-		BattleArena.registerCompetition(this, "ArenaDac", "dac", ArenaDacArena.class, new ArenaDacCommand());
+        BattleArena.registerCompetition(this, "ArenaDac", "dac", ArenaDacArena.class, new ArenaDacCommand());
 
-		saveDefaultConfig();
-		loadConfig();
+        saveDefaultConfig();
+        loadConfig();
 
 
-		Log.info("[" + getName()+ "] v" + getDescription().getVersion()+ " enabled!");
-	}
-	@Override
-	public void onDisable(){
-		Log.info("[" + getName()+ "] v" + getDescription().getVersion()+ " stopping!");
-	}
+        Log.info("[" + getName()+ "] v" + getDescription().getVersion()+ " enabled!");
+    }
+    @Override
+    public void onDisable(){
+        Log.info("[" + getName()+ "] v" + getDescription().getVersion()+ " stopping!");
+    }
 
-	@Override
-	public void reloadConfig(){
-		super.reloadConfig();
-	}
-	
-	public void loadConfig(){
-		FileConfiguration config = getConfig();
-		lives = config.getInt("max-lives", 2);
-		useLives = config.getBoolean("use-lives", true);
-	}
+    @Override
+    public void reloadConfig(){
+        super.reloadConfig();
+    }
 
-	public static ArenaDac getPlugin() {
-		return plugin;
-	}
+    public void loadConfig(){
+        FileConfiguration config = getConfig();
+        lives = config.getInt("max-lives", 2);
+        useLives = config.getBoolean("use-lives", true);
+    }
+
+    public static ArenaDac getPlugin() {
+        return plugin;
+    }
 }
