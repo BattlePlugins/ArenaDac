@@ -1,10 +1,11 @@
 package me.kana.arenadac;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Random;
 
+import mc.alk.arena.alib.bukkitadapter.MaterialAdapter;
+import mc.alk.arena.controllers.TeleportController;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,97 +16,39 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import mc.alk.arena.objects.arenas.Arena;
 import mc.alk.arena.objects.events.ArenaEventHandler;
-import mc.alk.arena.objects.teams.ArenaTeam;
 import mc.alk.arena.util.TeamUtil;
 
-public class ArenaDacArena extends Arena{	
-	Location locationSpawnStart;
-	Location locationSpawnPlongeoir;
-	int nbr_teams;
-	int numero_team = 0;
-	List<ArenaTeam> team;
-	Player playerSaut = null;
-	static int vie = 2;
-	static boolean verifVie = true;
-	static HashMap<Player, Integer> nbr_vie_player;
+public class ArenaDacArena extends Arena{
+
+	Location startLoc;
+	Location divingLoc;
+	int currentTeamIndex = 0;
+	Player playerJumping = null;
+	static Map<Player, Integer> playerLives = new HashMap<Player, Integer>();
 	int vieok = 0;
-	Material mm;
-	
-	
-	//-----------------
-	//---- ONSTART ----
-	//-----------------
+	Material mat;
+
 	@Override
     public void onStart(){
-		locationSpawnStart = getSpawn(2, false).getLocation();
-		locationSpawnPlongeoir = getSpawn(3, false).getLocation();
-		
-		Nbr_Teams();
-		
-		TpAllPlayerSpawn();
-		
-		setLivePlayer();		
-		
-		TpPlayerPlongeoir(Player_Team(numero_team));
+		startLoc = getSpawn(2, false).getLocation();
+		divingLoc = getSpawn(3, false).getLocation();
+
+		teams.forEach(team ->  {
+			for (Player player : team.getBukkitPlayers()) {
+
+                TeleportController.teleport(player, startLoc);
+				playerLives.put(player, ArenaDac.getPlugin().lives);
+			}
+		});
+
+		teleportToDivingBoard(new Random().nextInt(teams.size()));
 	}
-	
-	//-----------------------------------------
-	//---- On r�cup�re le nombre de joueur ----
-	//-----------------------------------------
-	public int Nbr_Teams(){
-		team = getTeams();
-		nbr_teams = team.size();
-		return nbr_teams;
-	}
-	
-	//-------------------------------------------
-	//---- On r�cup�re le joueurs de la team ----
-	//-------------------------------------------
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Player Player_Team(int num_team){
-		Set<Player> SetPlayerInTeam = team.get(num_team).getBukkitPlayers();
-		List<Player> PlayerInTeam = new ArrayList(SetPlayerInTeam);
-		return PlayerInTeam.get(0);
-	}
-	
-	//-------------------------------------------------
-	//---- On t�l�porte tous les joueurs au d�part ----
-	//-------------------------------------------------
-	public void TpAllPlayerSpawn(){
-		for(int i=0; i < nbr_teams; i++){
-			TpPlayerSpawn(Player_Team(i));
-		}
-	}
-	
-	//------------------------------------------------
-	//---- On t�l�porte tous les joueurs au spawn ----
-	//------------------------------------------------
-	public void TpPlayerSpawn(Player player){
-		player.teleport(locationSpawnStart);		
-	}
-	
-	//---------------------------------------------
-	//---- On t�l�porte le joueur au plongeoir ----
-	//---------------------------------------------
-	public void TpPlayerPlongeoir(Player player){
-		player.teleport(locationSpawnPlongeoir);
-		playerSaut = player;
-	}
-	
-	//-----------------------------------------------------
-	//---- On cr�� une liste avec les vies des joueurs ----
-	//-----------------------------------------------------
-	public void setLivePlayer(){
-		nbr_vie_player = new HashMap<Player, Integer>();
-		
-		for(int i=0; i< nbr_teams; i++){
-			nbr_vie_player.put(Player_Team(i), vie);
-		}				
-	}
-	
-	//------------------------------------------------
-	//---- On regarde si le joueur r�usi son saut ----
-	//------------------------------------------------
+
+	public void teleportToDivingBoard(int index){
+		Player[] teamArray = teams.get(index).getBukkitPlayers().toArray(new Player[teams.size()]);
+		TeleportController.teleport(teamArray[new Random().nextInt()], divingLoc);
+    }
+
 	@SuppressWarnings("deprecation")
 	@ArenaEventHandler(suppressCastWarnings=true)
 	public void onPlayerMove(PlayerMoveEvent e) {
@@ -113,123 +56,90 @@ public class ArenaDacArena extends Arena{
 		Block b = l.getBlock();
     	Material m = b.getType();
 
-		// Si le joueur touche l'eau ou la lave
-    	//-------------------------------------
-	    if (m == Material.STATIONARY_WATER || m == Material.WATER || m == Material.LAVA){	    	
-	    	if(playerSaut == e.getPlayer()){
-	    			    		
-	    		// On r�cup�re la couleur de la team
-		    	//----------------------------------
-		    	DyeColor c = TeamUtil.getDyeColor(numero_team);
-		    	byte d = c.getData();
-		    	
-		    	// On V�rifi si le joueur a fait une vie
-		        //--------------------------------------
-		        if(verifVie == true){
-		        	verif_vie(l, e.getPlayer());
-		        }
-		    	
-		        // On d�fini le Material � mettre
-		        //-------------------------------
-		        if(vieok == 0){
-		        	mm = Material.WOOL;
-		        }
-		        else{
-		        	mm = Material.GLASS;
-		        }
+	    if (m == MaterialAdapter.getMaterial("STATIONARY_WATER") || m == Material.WATER || m == Material.LAVA){
+	    	if (playerJumping.equals(e.getPlayer())) {
+		    	DyeColor c = TeamUtil.getDyeColor(currentTeamIndex);
+		    	byte data = c.getData();
 
-		        // On change les blocs en verre ou en laine
-		        //-----------------------------------------
-		        for(int i = 0;i < 3;i++){
-		        	if(b.getRelative(0, i, 0).getType() == Material.WATER || b.getRelative(0, i, 0).getType() == Material.STATIONARY_WATER || b.getRelative(0, i, 0).getType() == Material.LAVA){
-		        		b.getRelative(0, i, 0).setType(mm);
-			        	b.getRelative(0, i, 0).setData(d);
+		        if(ArenaDac.getPlugin().useLives)
+		        	updateLives(l, e.getPlayer());
+
+		        if(vieok == 0)
+		        	mat = MaterialAdapter.getMaterial("WOOL");
+		        else
+		        	mat = Material.GLASS;
+
+
+		        for(int i = 0; i < 3; i++){
+		        	if(b.getRelative(0, i, 0).getType() == Material.WATER || b.getRelative(0, i, 0).getType() == MaterialAdapter.getMaterial("STATIONARY_WATER") || b.getRelative(0, i, 0).getType() == Material.LAVA){
+		        		b.getRelative(0, i, 0).setType(mat);
+			        	b.getRelative(0, i, 0).setData(data);
 		        	}		        	
 		        }
-		        for(int ii = -4;ii < 0;ii++){
-		        	if(b.getRelative(0, ii, 0).getType() == Material.WATER || b.getRelative(0, ii, 0).getType() == Material.STATIONARY_WATER || b.getRelative(0, ii, 0).getType() == Material.LAVA){
-		        		b.getRelative(0, ii, 0).setType(mm);
-			        	b.getRelative(0, ii, 0).setData(d);
+
+		        for(int i = -4; i < 0; i++){
+		        	if(b.getRelative(0, i, 0).getType() == Material.WATER || b.getRelative(0, i, 0).getType() == MaterialAdapter.getMaterial("STATIONARY_WATER") || b.getRelative(0, i, 0).getType() == Material.LAVA){
+		        		b.getRelative(0, i, 0).setType(mat);
+			        	b.getRelative(0, i, 0).setData(data);
 		        	}
 		        }
-		        
-		        // On verifi si tous les joueurs ont fait leur saut
-		        //-------------------------------------------------
-		        if(nbr_teams != numero_team + 1){
-		        	numero_team = numero_team +1;		        	
-		        	TpPlayerPlongeoir(Player_Team(numero_team));
-		        }
-		        else{
-		        	Nbr_Teams();
-		        	numero_team = 0;
-		        	TpPlayerPlongeoir(Player_Team(numero_team));
-		        }
-		        
-		        // On t�l�porte le joueur au spawn apr�s son saut
-		        //-----------------------------------------------
-		        e.getPlayer().teleport(locationSpawnStart);
+
+		        if (teams.size() != currentTeamIndex + 1)
+		        	currentTeamIndex = currentTeamIndex +1;
+		        else
+		        	currentTeamIndex = 0;
+
+				teleportToDivingBoard(currentTeamIndex);
+
+				TeleportController.teleport(e.getPlayer(), startLoc);
 	    	}
 	    }
 	}
-	
-	//------------------------------------------------
-	//---- On regarde si le joueur loupe son saut ----
-	//------------------------------------------------
+
 	@ArenaEventHandler(suppressCastWarnings=true)
 	public void onEntityDamage(EntityDamageEvent e){
 		Player p = (Player) e.getEntity();
-			if(playerSaut == p){			
-				int v = nbr_vie_player.get(p) - 1;
-				
-				// On verifi le nombre de vie restant
-				//-----------------------------------
+			if(playerJumping == p){
+				int v = playerLives.get(p) - 1;
+
 				if(v == 0){
 					e.setDamage(20);
-					p.sendMessage("[ArenaDac] Vous avez loup� votre saut !");
+					p.sendMessage("[ArenaDac] You have missed your jump!");
 				}
 				else{
 					e.setDamage(0);
-					p.sendMessage("[ArenaDac] Vous avez loup� votre saut !");
-					p.sendMessage("[ArenaDac] Vous perdez une vie :(");
-					nbr_vie_player.replace(p, v);
-					p.sendMessage("[ArenaDac] Il vous en reste : " + v);
-					p.teleport(locationSpawnStart);
+					p.sendMessage("[ArenaDac] You have missed your jump!");
+					p.sendMessage("[ArenaDac] You have lost a life :(");
+					playerLives.replace(p, v);
+					p.sendMessage("[ArenaDac] Lives left: " + v);
+                    TeleportController.teleport(p, startLoc);
 				}
-				
-				// On verifi si c'est le dernier joueur qui saute
-				//-----------------------------------------------
-				if(nbr_teams != numero_team + 1){
-		        	numero_team = numero_team + 1;	        	
-		        	TpPlayerPlongeoir(Player_Team(numero_team));
-		        }
-		        else{
-		        	Nbr_Teams();
-		        	numero_team = 0;
-		        	TpPlayerPlongeoir(Player_Team(numero_team));
-		        }
+
+				if (teams.size() != currentTeamIndex + 1)
+		        	currentTeamIndex = currentTeamIndex + 1;
+		        else
+		        	currentTeamIndex = 0;
+
+				teleportToDivingBoard(currentTeamIndex);
 			}
 			else{
 				e.setDamage(0);
 			}
 	}
-	
-	//---------------------------------------------
-	//---- On v�rifi si le joueur gagne un vie ----
-	//---------------------------------------------
-	public void verif_vie(Location loc, Player player){
+
+	public void updateLives(Location loc, Player player){
 		Material m1 = loc.getBlock().getRelative(1, -1, 0).getType();
 		Material m2 = loc.getBlock().getRelative(-1, -1, 0).getType();
 		Material m3 = loc.getBlock().getRelative(0, -1, 1).getType();
 		Material m4 = loc.getBlock().getRelative(0, -1, -1).getType();
 		
-		if(m1 == Material.WOOL && m2 == Material.WOOL && m3 == Material.WOOL && m4 == Material.WOOL){
-			int v = nbr_vie_player.get(player) + 1;
-			nbr_vie_player.replace(player, v);
-			player.sendMessage("[ArenaDac] F�licitation vous avez gagn� une vie :)");
-			player.sendMessage("[ArenaDac] Il vous en reste : " + v);
+		if(m1.name().contains("WOOL") && m2.name().contains("WOOL") && m3.name().contains("WOOL") && m4.name().contains("WOOL")){
+			int v = playerLives.get(player) + 1;
+			playerLives.replace(player, v);
+			player.sendMessage("[ArenaDac] Congratulations you have received a life!");
+			player.sendMessage("[ArenaDac] Lives left: " + v);
 			vieok = 1;
-		}
-		else{
+		} else {
 			vieok = 0;
 		}
 	}

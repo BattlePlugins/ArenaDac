@@ -1,2 +1,2 @@
-vie : true
-nbrVie : 2
+use-lives: true
+max-lives: 2

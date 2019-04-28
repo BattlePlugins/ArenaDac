@@ -7,10 +7,16 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.util.Log;
 
 public class ArenaDac extends JavaPlugin{
-	
+
+	private static ArenaDac plugin;
+
+	public int lives;
+	public boolean useLives;
+
 	@Override
 	public void onEnable(){
-		
+		plugin = this;
+
 		BattleArena.registerCompetition(this, "ArenaDac", "dac", ArenaDacArena.class, new ArenaDacCommand());
 
 		saveDefaultConfig();
@@ -31,7 +37,11 @@ public class ArenaDac extends JavaPlugin{
 	
 	public void loadConfig(){
 		FileConfiguration config = getConfig();
-		ArenaDacArena.vie = config.getInt("nbrVie", 2);
-		ArenaDacArena.verifVie = config.getBoolean("vie", true);
-	}	
+		lives = config.getInt("max-lives", 2);
+		useLives = config.getBoolean("use-lives", true);
+	}
+
+	public static ArenaDac getPlugin() {
+		return plugin;
+	}
 }
