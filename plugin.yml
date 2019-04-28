@@ -1,8 +1,8 @@
-name: ArenaDac
+name: ${project.name}
 main: me.kana.arenadac.ArenaDac
-version: 0.0.2
+version: ${project.version}
 depend: [BattleArena]
-authors: [kana34]
+authors: [kana34, Redned]
 commands:
     dac:
         aliases: [dac]
