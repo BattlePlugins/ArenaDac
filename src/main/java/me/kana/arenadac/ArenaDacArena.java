@@ -3,6 +3,7 @@ package me.kana.arenadac;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import mc.alk.arena.alib.bukkitadapter.MaterialAdapter;
 import mc.alk.arena.controllers.TeleportController;
@@ -24,7 +25,7 @@ public class ArenaDacArena extends Arena{
 	Location divingLoc;
 	int currentTeamIndex = 0;
 	Player playerJumping = null;
-	static Map<Player, Integer> playerLives = new HashMap<Player, Integer>();
+	static Map<UUID, Integer> playerLives = new HashMap<UUID, Integer>();
 	int vieok = 0;
 	Material mat;
 
@@ -37,7 +38,7 @@ public class ArenaDacArena extends Arena{
 			for (Player player : team.getBukkitPlayers()) {
 
                 TeleportController.teleport(player, startLoc);
-				playerLives.put(player, ArenaDac.getPlugin().lives);
+				playerLives.put(player.getUniqueId(), ArenaDac.getPlugin().lives);
 			}
 		});
 
@@ -100,7 +101,7 @@ public class ArenaDacArena extends Arena{
 	public void onEntityDamage(EntityDamageEvent e){
 		Player p = (Player) e.getEntity();
 			if(playerJumping == p){
-				int v = playerLives.get(p) - 1;
+				int v = playerLives.get(p.getUniqueId()) - 1;
 
 				if(v == 0){
 					e.setDamage(20);
@@ -110,7 +111,7 @@ public class ArenaDacArena extends Arena{
 					e.setDamage(0);
 					p.sendMessage("[ArenaDac] You have missed your jump!");
 					p.sendMessage("[ArenaDac] You have lost a life :(");
-					playerLives.replace(p, v);
+					playerLives.replace(p.getUniqueId(), v);
 					p.sendMessage("[ArenaDac] Lives left: " + v);
                     TeleportController.teleport(p, startLoc);
 				}
@@ -134,8 +135,8 @@ public class ArenaDacArena extends Arena{
 		Material m4 = loc.getBlock().getRelative(0, -1, -1).getType();
 		
 		if(m1.name().contains("WOOL") && m2.name().contains("WOOL") && m3.name().contains("WOOL") && m4.name().contains("WOOL")){
-			int v = playerLives.get(player) + 1;
-			playerLives.replace(player, v);
+			int v = playerLives.get(player.getUniqueId()) + 1;
+			playerLives.replace(player.getUniqueId(), v);
 			player.sendMessage("[ArenaDac] Congratulations you have received a life!");
 			player.sendMessage("[ArenaDac] Lives left: " + v);
 			vieok = 1;

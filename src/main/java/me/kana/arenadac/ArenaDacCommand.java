@@ -28,11 +28,11 @@ public class ArenaDacCommand extends CustomCommandExecutor{
 			return false;
 		}
 		else{
-			if(ArenaDacArena.playerLives.get(sender) == null){
+			if(ArenaDacArena.playerLives.get(sender.getID()) == null){
 				sender.sendMessage("[ArenaDac] You are not currently in a game!");
 				return false;
 			} else {
-				sender.sendMessage("[ArenaDac] Lives left: " + ArenaDacArena.playerLives.get(sender));
+				sender.sendMessage("[ArenaDac] Lives left: " + ArenaDacArena.playerLives.get(sender.getID()));
 				return true;				
 			}
 		}
